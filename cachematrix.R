@@ -1,9 +1,9 @@
-## TODO
-## Put comments here that give an overall description of what your
-## functions do
+## These functions work together to provide a means to cache the inverse of
+## a given matrix and to make that inverse available (from the cache) for
+## subsequent inverse requests. If the inverse of a new matrix is requested,
+## then a new inverse matrix is calulated and cached. 
 
-## This function creates a special "matrix" object that can cache its inverse.
-
+## makeCacheMatrix creates a special "matrix" object that can cache its inverse.
 makeCacheMatrix <- function(baseMatrix = matrix()) {
      inverseMatrix <- NULL
      set <- function(newMatrix) {
@@ -19,21 +19,22 @@ makeCacheMatrix <- function(baseMatrix = matrix()) {
           getInverse = getInverse)
 }
 
+## cacheSolve computes the inverse of the special "matrix" returned by
+## makeCacheMatrix above. If the inverse has already been calculated (and
+## the matrix has not changed), then cacheSolve retrieves the inverse 
+## from the cache.
 
-## This function computes the inverse of the special "matrix" returned by
-## makeCacheMatrix above. 
-## If the inverse has already been calculated (and the matrix has not changed),
-## then cacheSolve retrieves the inverse from the cache.
-
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
-     inverseMatrix <- x$getInverse()
+cacheSolve <- function(findInverseOfThisMatrix, ...) {
+     inverseMatrix <- findInverseOfThisMatrix$getInverse()
      if(!is.null(inverseMatrix)) {
-          message("getting cached inverse matrix")
+          message("Getting cached inverse matrix.")
           return(inverseMatrix)
      }
-     data <- x$get()
-     inverseMatrix <- solve(data, ...)
-     x$setInverse(inverseMatrix)
-     inverseMatrix
+     else {
+          message("Calculating inverse matrix.")
+          baseMatrix <- findInverseOfThisMatrix$get()
+          inverseMatrix <- solve(baseMatrix, ...)
+          findInverseOfThisMatrix$setInverse(inverseMatrix)
+          inverseMatrix
+     }
 }
